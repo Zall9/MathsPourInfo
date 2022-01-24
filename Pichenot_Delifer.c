@@ -8,9 +8,7 @@
  */
 int bit(int i, mot m)
 {
-    return (m>>i)&1;
-
-    //return m>>(i-1)&1;
+    return (m >> i) & 1;
 }
 
 /*
@@ -18,12 +16,38 @@ int bit(int i, mot m)
  * question 1
  */
 void print_bin(mot m, int n)
-{   for(int i=(int)sizeof(mot)*3-1;i>=0;i--)
+{
+    /*for(int i=(int)sizeof(mot)*3-1;i>=0&&n>0;i--)
     {
         printf("%d", (bit(i, m)));
+        n--;
+    }*/
+    mot res = m;
+    int i = 0;
+    // int val=0;
+    int result[WORDSIZEINOCTAL]; // sizeof(mot)*8
+    // for(int i=(int)sizeof(mot)*3-1;i>=0;i--)
+    while (res != 0)
+    { // && n > 0
+        result[i] = bit(i, m);
+        printf("%d", (bit(i, m)));
+        res <<= 1;
+        i++;
+    }
+    result[i] = bit(i, m);
+    printf("\n");
+    //printf("n:%d", n);
+    for (int j=0;j<WORDSIZEINOCTAL;j++)
+    {
+        // printf("%x",result[i]);
+        if(i==0 || n==0 )break;
+        //printf("i:= %d\n", i);
+        printf("%d", result[j]);
+        n--;
+        i--;
+        
     }
 }
-
 /*
  * compte le nombre de 1 dans un mot
  * question 2
@@ -31,10 +55,10 @@ void print_bin(mot m, int n)
 int poids(mot m)
 {
     int resultat = 0;
-    for (int i = 0; i < (int)sizeof(mot)*3; i++)
-    { 
+    for (int i = 0; i < (int)sizeof(mot) * 3; i++)
+    {
         if (m & 1)
-            resultat+=1;
+            resultat += 1;
         m >>= 1;
     }
     return resultat;
