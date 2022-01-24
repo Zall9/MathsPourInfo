@@ -31,10 +31,10 @@ void print_bin(mot m, int n)
 int poids(mot m)
 {
     int resultat = 0;
-    for (long unsigned int i = 0; i < sizeof(mot); i++)
-    {
+    for (int i = 0; i < (int)sizeof(mot)*3; i++)
+    { 
         if (m & 1)
-            resultat++;
+            resultat+=1;
         m >>= 1;
     }
     return resultat;

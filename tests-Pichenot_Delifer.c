@@ -14,15 +14,14 @@ int perform_tests(int argc, char **argv)
         printf("\n");
         // ...
     }
+    if (argc > 0 && strcmp(argv[0], "2") == 0)
+    {
+        mot m = 0xace;
+        printf("le poids du mot '%x' est en fait %d",m,poids(m));
+    }
     else
     {
         printf("???\n");
-    }
-    if (argc > 0 && strcmp(argv[0], "1") == 0)
-    {
-    }
-    else
-    {
     }
     return 0;
 }
