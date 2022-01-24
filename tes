@@ -1,0 +1,42 @@
+#
+# Fichier Makefile pour le TP1 d'info-607
+#
+
+##
+## CONSIGNES :
+##    - votre fichier principal devra s'appeler "prenom-nom.c" ou
+##      "nom1-nom2.c" si vous Ãªtes en binÃ´mes
+##    - il faut modifier la variable "NOM" ci dessous pour qu'elle corresponde
+##      au nom du fichier (sans le ".c")
+##    - pour compiler, il suffit de faire
+##      $ make
+##      dans le rÃ©pertoire qui contient les fichiers
+##    - pendant le dÃ©veloppement, vous pouvez supprimer l'option "-Werror"
+##      pour autoriser les warnings. (Attention Ã  bien la remettre pour tester
+##      votre version finale.)
+##
+##
+
+## Ã  modifier
+NOM = Pichenot_Delifer
+# NOM = correction
+
+# FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror
+FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror -Wno-unused-parameter
+
+
+#----------------------------------------------------------------------
+
+
+GCC = gcc $(FLAGS)
+
+all: $(NOM)
+
+$(NOM): $(NOM).o
+	$(GCC) $(NOM).o -o $(NOM)
+
+%.o: %.c tp1.h
+	$(GCC) -c -o $@ $<
+
+clean:
+	rm -f $(NOM) *.o a.out
