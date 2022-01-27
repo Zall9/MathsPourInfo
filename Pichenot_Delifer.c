@@ -16,38 +16,15 @@ int bit(int i, mot m)
  * question 1
  */
 void print_bin(mot m, int n)
-{
-    /*for(int i=(int)sizeof(mot)*3-1;i>=0&&n>0;i--)
-    {
-        printf("%d", (bit(i, m)));
-        n--;
-    }*/
-    mot res = m;
-    int i = 0;
-    // int val=0;
-    int result[WORDSIZEINOCTAL]; // sizeof(mot)*8
-    // for(int i=(int)sizeof(mot)*3-1;i>=0;i--)
-    while (res != 0)
+{        
+    int i = n-1;
+    while (i >= 0)
     { // && n > 0
-        result[i] = bit(i, m);
         printf("%d", (bit(i, m)));
-        res <<= 1;
-        i++;
-    }
-    result[i] = bit(i, m);
-    printf("\n");
-    //printf("n:%d", n);
-    for (int j=0;j<WORDSIZEINOCTAL;j++)
-    {
-        // printf("%x",result[i]);
-        if(i==0 || n==0 )break;
-        //printf("i:= %d\n", i);
-        printf("%d", result[j]);
-        n--;
         i--;
-        
     }
 }
+
 /*
  * compte le nombre de 1 dans un mot
  * question 2
@@ -55,7 +32,7 @@ void print_bin(mot m, int n)
 int poids(mot m)
 {
     int resultat = 0;
-    for (int i = 0; i < (int)sizeof(mot) * 3; i++)
+    for (int i = 0; i < WORDSIZEINOCTAL; i++)
     {
         if (m & 1)
             resultat += 1;
@@ -65,21 +42,21 @@ int poids(mot m)
 }
 
 /**********************************************************************
- * Code de Golay avec parité
- * matrice generatrice: I | G avec G
-   10101110001
-   11111001001
-   11010010101
-   11000111011
-   11001101100
-   01100110110
-   00110011011
-   10110111100
-   01011011110
-   00101101111
-   10111000110
-   01011100011
- *********************************************************************/
+* Code de Golay avec parité
+* matrice generatrice: I | G avec G
+10101110001
+11111001001
+11010010101
+11000111011
+11001101100
+01100110110
+00110011011
+10110111100
+01011011110
+00101101111
+10111000110
+01011100011
+*********************************************************************/
 
 /* question 3 */
 mot golay_A[12] = {0x571, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
