@@ -13,10 +13,11 @@
 ################
 ## à modifier ##
 ################
-NOM = Pichenot_Delifer
+NOM ?= delifer-pichenot
 
-# FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror
-FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror -Wno-unused-parameter -Wno-unused-function
+
+# FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror -O3
+FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror -O3 -Wno-unused-parameter -Wno-unused-function
 
 
 
@@ -24,35 +25,34 @@ FLAGS = -Wall -std=c99 -Wextra -pedantic -Werror -Wno-unused-parameter -Wno-unus
 #----- NE RIEN MODIFIER SOUS CETTE LIGNE ------------------------------
 #----------------------------------------------------------------------
 
-FILES_C = main.c $(NOM).c tests-$(NOM).c
+NAME = $(NOM:.c=)
+EXE = golay
+
+FILES_C = main.c $(NAME).c tests-$(NAME).c
 FILES_O = $(FILES_C:.c=.o)
 
 CC = gcc $(FLAGS)
 # CC = clang $(FLAGS)
 
-all: $(NOM)
+all: $(EXE)
 
-$(NOM): $(FILES_O)
-	$(CC) $(FILES_O) -o $(NOM)
-
-harry-potter.o: harry-potter.c tp1.h
-ifeq ($(USER),hyvernat)
-	$(CC) -c -o $@ $<
-else
-ifeq ($(USER),pierre)
-	$(CC) -c -o $@ $<
-else
-	@echo
-	@echo "CHANGEZ LE NOM DU FICHIER $< ET"
-	@echo "MODIFIEZ LA VARIABLE 'NOM' DANS LE FICHIER Makefile"
-	@echo
-	@false
-endif
-endif
+$(EXE): $(FILES_O)
+	$(CC) $(FILES_O) -o $(EXE)
 
 %.o: %.c tp1.h
 	$(CC) -c -o $@ $<
 
-clean:
-	rm -f $(NOM) *.o a.out correction harry-potter
+harry-potter.o: harry-potter.c tp1.h
+	@echo
+	@echo "CHANGEZ LE NOM DU FICHIER $< ET"
+	@echo "MODIFIEZ LA VARIABLE 'NOM' DANS LE FICHIER Makefile"
+	@echo
+	$(CC) -c -o $@ $<
 
+clean:
+	rm -f *.o a.out
+
+veryclean: clean
+	rm -rf $(EXE)
+
+.PHONY: clean veryclean all

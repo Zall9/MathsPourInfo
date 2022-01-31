@@ -1,11 +1,10 @@
 /*
- * info-607,
+ * info602,
  * entêtes pour le tp1
  */
 
 #ifndef _TP1_H
 #define _TP1_H
-#define WORDSIZEINOCTAL 32
 /* bibliothèques qui peuvent servir... */
 #include <assert.h>
 #include <stdarg.h>
@@ -15,8 +14,9 @@
 #include <unistd.h>
 
 #include <getopt.h> /* gestion des arguments optionels de la ligne de commandes */
+#include <inttypes.h>
 #include <stdint.h> /* types d'entier avec garantie sur le nombre de bits */
-#include <time.h>   /* pour initialiser la graine pour générer des nombres aléatoires */
+#include <time.h> /* pour initialiser la graine pour générer des nombres aléatoires */
 
 /*
  * variable globale, niveau de d'affichage
@@ -89,9 +89,20 @@ unsigned decalage_circulaire(mot m, int n, int p);
 mot correction_golay(mot m);
 
 /*
- * correction d'erreur pour le code de Golay en utilisant la recherche exhaustive
+ * correction d'erreur pour le code de Golay en utilisant la recherche
+ * exhaustive
  */
 mot correction_exhaustive_golay(mot m);
+
+/*
+ * statistiques de correction sur un canal binaire symétrique
+ */
+void statistiques(int nb_tests, double proba,
+    int* nb_mots_modifies,   // nombre de mots envoyés avec une erreur
+    int* nb_mots_incorrects, // nombre de mots reçus avec une erreur
+    int* nb_bits_modifies,   // nombre de bits envoyés avec une erreur
+    int* nb_bits_incorrects  // nombre de bits reçus avec une erreur
+);
 
 /*
  * fonction de test exécutée avec l'argument "-T" depuis la ligne de commande

@@ -33,14 +33,20 @@ mot bruite_mot(mot m, double p)
 /*
  * fait des tests et quelques statistiques
  */
-void statistiques(int nb_tests, double proba)
+void statistiques(int nb_tests, double proba,
+    int* nb_mots_modifies,   // nombre de mots envoyés avec une erreur
+    int* nb_mots_incorrects, // nombre de mots reçus avec une erreur
+    int* nb_bits_modifies,   // nombre de bits envoyés avec une erreur
+    int* nb_bits_incorrects  // nombre de bits reçus avec une erreur
+)
 {
 
     mot m, err, c, C;
 
-    int nb_mots_incorrects = 0;
-    int nb_bits_incorrects = 0;
-    int nb_bits_modifies = 0;
+    *nb_mots_incorrects = 0;
+    *nb_mots_modifies = 0;
+    *nb_bits_incorrects = 0;
+    *nb_bits_modifies = 0;
     int w;
 
     for (int i = 0; i < nb_tests; i++) {
@@ -54,7 +60,9 @@ void statistiques(int nb_tests, double proba)
         // on génère une erreur
         err = bruite_mot(c, proba);
         err &= ((1 << 24) - 1);
-        nb_bits_modifies += poids(err ^ c);
+        int p = poids(err ^ c);
+        *nb_bits_modifies += p;
+        *nb_mots_modifies += (p > 0);
 
         // on essaie de la corriger
         C = correction_golay(err);
@@ -63,15 +71,10 @@ void statistiques(int nb_tests, double proba)
         err = C ^ m;
         w = poids(err);
         if (w != 0) {
-            nb_mots_incorrects++;
-            nb_bits_incorrects += w;
+            *nb_mots_incorrects += 1;
+            *nb_bits_incorrects += w;
         }
     }
-    printf("%d mots ont été codés, %d bits ont étés modifiés\n", nb_tests, nb_bits_modifies);
-    printf("%d mots n'ont pas étés corrigés correctement (%.2f%%)\n", nb_mots_incorrects,
-        (100.0 * nb_mots_incorrects) / nb_tests);
-    printf("%d bits n'ont pas étés corrigés correctement (%.2f%%)\n", nb_bits_incorrects,
-        (100.0 * nb_bits_incorrects) / (12.0 * nb_tests));
 }
 
 void print_usage(char* name)
@@ -80,24 +83,22 @@ void print_usage(char* name)
     printf("  %s options\n", name);
 
     printf("actions sur un mot :\n");
-    printf("    -c <MOT>      code le mot de 12 bits sur 23 bits\n");
-    printf("    -C <MOT>      code le mot de 12 bits sur 24 bits\n");
-    printf("    -s <MOT>      calcule le syndrome du mot 23 bits\n");
-    printf("    -d <MOT>      décode (avec correction d'erreurs) le mot de 23 bits sur 12 bits\n");
-    printf("    -D <MOT>      décode (avec correction d'erreurs) le mot de 24 bits sur 12 bits\n");
-    printf("    -e <MOT>      décode (avec correction d'erreurs exhaustive) le mot de 23 bits sur "
-           "12 bits\n");
-    printf("    -E <MOT>      décode (avec correction d'erreurs exhaustive) le mot de 24 bits sur "
-           "12 bits\n");
+    printf("    -c MOT    code le mot de 12 bits sur 23 bits\n");
+    printf("    -C MOT    code le mot de 12 bits sur 24 bits\n");
+    printf("    -s MOT    calcule le syndrome du mot 23 bits\n");
+    printf("    -d MOT    décode (avec correction d'erreurs) le mot de 23 bits sur 12 bits\n");
+    printf("    -D MOT    décode (avec correction d'erreurs) le mot de 24 bits sur 12 bits\n");
+    printf("    -e MOT    décode (avec correction d'erreurs exhaustive) le mot de 23 bits sur 12 bits\n");
+    printf("    -E MOT    décode (avec correction d'erreurs exhaustive) le mot de 24 bits sur 12 bits\n");
 
     printf("\ntests aléatoires :\n");
-    printf("    -n <NB>   nombre de mots à tester\n");
-    printf("    -p <X>    probabilité d'erreur sur chaque bit\n");
+    printf("    -n NB     nombre de mots à tester\n");
+    printf("    -p X      probabilité d'erreur (pourcentage) sur chaque bit\n");
 
     printf("\ndivers :\n");
     printf("    -x        utilise la base hexadécimal plutôt que la base 2\n");
     printf("    -v        augmente le niveau des affichages de débogage\n");
-    printf("    -T <ARG>  lance la fonction de test\n");
+    printf("    -T ARG    lance la fonction de test\n");
     printf("    -h        ce message\n");
 }
 
@@ -237,7 +238,7 @@ int main(int argc, char** argv)
             stat_test = 1;
             break;
         case 'p':
-            proba = atof(optarg);
+            proba = atof(optarg) / 100;
             stat_test = 1;
             break;
         case 'v':
@@ -260,7 +261,20 @@ int main(int argc, char** argv)
     }
 
     if (stat_test == 1) {
-        statistiques(nb_stat_tests, proba);
+        int nb_mots_modifies = 0;
+        int nb_mots_incorrects = 0;
+        int nb_bits_modifies = 0;
+        int nb_bits_incorrects = 0;
+        statistiques(
+            nb_stat_tests, proba, &nb_mots_modifies, &nb_mots_incorrects, &nb_bits_modifies, &nb_bits_incorrects);
+        printf("Tests sur un canal symétrique binaire avec taux d'erreur de %.2f%%.\n", proba * 100);
+        printf("  %d mots ont été codés et envoyés\n", nb_stat_tests);
+        printf("  %d mots ont étés modifiés\n", nb_mots_modifies);
+        printf("  %d bits ont étés modifiés\n", nb_bits_modifies);
+        printf("  %d mots n'ont pas étés corrigés correctement (%.4f%%)\n", nb_mots_incorrects,
+            (100.0 * nb_mots_incorrects) / nb_stat_tests);
+        printf("  %d bits n'ont pas étés corrigés correctement (%.4f%%)\n", nb_bits_incorrects,
+            (100.0 * nb_bits_incorrects) / (12.0 * nb_stat_tests));
     }
 
     if (test > 0) {
@@ -271,4 +285,4 @@ int main(int argc, char** argv)
 
     return 0;
 }
-// vim: tw=100
+// vim: tw=120
